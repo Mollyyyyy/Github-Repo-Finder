@@ -11,11 +11,11 @@ import MBProgressHUD
 import AFNetworking
 
 // Main ViewController
-class RepoResultsViewController: UIViewController,UITableViewDelegate, UITableViewDataSource {
+class RepoResultsViewController: UIViewController,UITableViewDelegate, UITableViewDataSource,SettingsPresentingViewControllerDelegate {
 
     var searchBar: UISearchBar!
     var searchSettings = GithubRepoSearchSettings()
-
+    
     var repos: [GithubRepo]!
     @IBOutlet weak var tableView: UITableView!
 
@@ -37,7 +37,15 @@ class RepoResultsViewController: UIViewController,UITableViewDelegate, UITableVi
         tableView.estimatedRowHeight = 500
         tableView.rowHeight = UITableViewAutomaticDimension
     }
-
+    func didSaveSettings(settings: GithubRepoSearchSettings) {
+        self.searchSettings = settings
+        doSearch()
+    }
+    
+    func didCancelSettings() {
+        
+    }
+ 
     // Perform the search.
     fileprivate func doSearch() {
 
@@ -73,7 +81,12 @@ class RepoResultsViewController: UIViewController,UITableViewDelegate, UITableVi
             return 0
         }
     }
-
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let navController = segue.destination as! UINavigationController
+        let vc = navController.topViewController as! SearchSettingsViewController
+        vc.settings = self.searchSettings
+        vc.delegate = self
+    }
 }
 
 // SearchBar methods
@@ -99,4 +112,6 @@ extension RepoResultsViewController: UISearchBarDelegate {
         searchBar.resignFirstResponder()
         doSearch()
     }
+    
+    
 }
